@@ -1,0 +1,63 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Accueil - Signalements{% endblock %}
+
+{% block content %}
+<style>
+    .header-rec { text-align: center; margin-bottom: 40px; }
+    .header-rec h1 { color: #145A32; font-size: 32px; }
+    .header-rec p { color: #666; font-size: 18px; }
+    .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; max-width: 900px; margin: auto; }
+    .card-rec { background: white; border-radius: 8px; padding: 30px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-top: 4px solid #145A32; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-rec h2 { color: #333; font-size: 20px; margin-bottom: 10px; }
+    .card-rec p { color: #666; font-size: 14px; margin-bottom: 25px; flex-grow: 1; }
+    .btn-rec { display: inline-block; padding: 12px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; transition: 0.3s; width: 100%; box-sizing: border-box;}
+    .btn-blue { background: #0056b3; color: white; }
+    .btn-blue:hover { background: #004494; }
+    .btn-teal { background: #17a2b8; color: white; }
+    .btn-teal:hover { background: #138496; }
+    .btn-outline { background: white; color: #0056b3; border: 2px solid #0056b3; }
+    .btn-outline:hover { background: #f0f8ff; }
+    .btn-green { background: #28a745; color: white; }
+    .btn-green:hover { background: #218838; }
+</style>
+
+<div class="header-rec">
+    <h1>Gestion des Signalements & Réclamations</h1>
+    <p>Bienvenue sur le portail de traitement des demandes des usagers.</p>
+</div>
+
+<div class="grid-cards">
+    <div class="card-rec">
+        <div>
+            <h2>📝 Déposer une réclamation</h2>
+            <p>Signalez un problème concernant votre fournisseur d'accès ou votre connexion Fibre.</p>
+        </div>
+        <a href="{% url 'creer_reclamation' %}" class="btn-rec btn-blue">Déposer une réclamation</a>
+    </div>
+
+    <div class="card-rec">
+        <div>
+            <h2>🔍 Suivre ma réclamation</h2>
+            <p>Retrouvez l'état d'avancement de votre dossier grâce à la référence reçue après son dépôt.</p>
+        </div>
+        <a href="{% url 'suivi_reclamation' %}" class="btn-rec btn-teal">Suivre ma réclamation</a>
+    </div>
+
+    <div class="card-rec">
+        <div>
+            <h2>📄 Consulter les réclamations</h2>
+            <p>Accédez à l'espace de consultation pour retrouver les réclamations selon vos autorisations.</p>
+        </div>
+        <a href="{% url 'liste_reclamations' %}" class="btn-rec btn-outline">Consulter les réclamations</a>
+    </div>
+
+    <div class="card-rec" style="border-top-color: #17a2b8;">
+        <div>
+            <h2>📊 Tableau de bord ARTEC</h2>
+            <p>Consultez les statistiques globales et suivez l'évolution des réclamations reçues.</p>
+        </div>
+        <a href="{% url 'tableau_bord' %}" class="btn-rec btn-green">Accéder au tableau de bord</a>
+    </div>
+</div>
+{% endblock %}

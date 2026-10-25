@@ -1,0 +1,56 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Déposer une réclamation{% endblock %}
+
+{% block content %}
+<style>
+    .form-wrapper { max-width: 650px; margin: 40px auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid #145A32; }
+    .form-wrapper h1 { color: #1a252f; text-align: center; margin-top: 0; margin-bottom: 10px; }
+    .form-wrapper p.subtitle { text-align: center; color: #666; margin-bottom: 30px; font-size: 15px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; font-size: 14px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; box-sizing: border-box; font-family: inherit; transition: 0.3s; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #145A32; outline: none; box-shadow: 0 0 5px rgba(20,90,50,0.3); }
+    .form-group textarea { resize: vertical; height: 120px; }
+    .btn-submit { background: #145A32; color: white; border: none; padding: 15px; font-size: 16px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+    .btn-submit:hover { background: #0e3d22; }
+    .success-msg { background: #d4edda; color: #155724; padding: 20px; border-radius: 6px; text-align: center; margin-bottom: 20px; border-left: 5px solid #28a745; }
+    .errorlist { color: #dc3545; font-size: 13px; margin-top: 5px; padding-left: 0; list-style: none; }
+</style>
+
+<div class="form-wrapper">
+    <h1>Déposer une réclamation</h1>
+    <p class="subtitle">Signalez un problème concernant votre fournisseur. Notre équipe le traitera dans les plus brefs délais.</p>
+
+    {% if message %}
+        <div class="success-msg">
+            <h3 style="margin-top:0;">{{ message }}</h3>
+            {% if reclamation_reference %}
+                <p>Voici votre numéro de suivi (gardez-le précieusement) :</p>
+                <p style="font-size: 18px; font-weight: bold; background: white; padding: 12px; border: 1px dashed #28a745; border-radius: 4px;">{{ reclamation_reference }}</p>
+                <a href="{% url 'suivi_reclamation' %}" style="display:inline-block; margin-top:10px; background:#28a745; color:white; text-decoration:none; padding:10px 20px; border-radius:4px; font-weight:bold;">Aller à la page de suivi</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if not message %}
+    <form method="POST">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit" class="btn-submit">Envoyer ma réclamation</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

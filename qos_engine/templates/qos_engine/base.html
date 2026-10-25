@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Observatoire Fibre Optique{% endblock %}</title>
+    <style>
+        /* Styles globaux */
+        body { font-family: 'Verdana', sans-serif; background: #f0f4f8; margin: 0; padding: 0; }
+        
+        /* Barre de navigation (Navbar) - Couleur Vert Foncé */
+        .navbar { background: #145A32; color: white; display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .navbar-brand { font-size: 22px; font-weight: bold; color: white; text-decoration: none; letter-spacing: 1px; }
+        .nav-links { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        .nav-links a { color: #d5f5e3; text-decoration: none; font-weight: bold; font-size: 14px; padding: 8px 12px; border-radius: 4px; transition: 0.3s; }
+        .nav-links a:hover { background: #1E8449; color: white; }
+        
+        /* Bouton de déconnexion (Orange) */
+        .btn-logout { background: #E67E22 !important; color: white !important; border: none; cursor: pointer; font-family: inherit; font-weight: bold; padding: 8px 12px; border-radius: 4px; font-size: 14px;}
+        .btn-logout:hover { background: #D35400 !important; }
+
+        /* Conteneur principal */
+        .main-content { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'avis_public' %}" class="navbar-brand">📡 Observatoire Fibre Optique</a>
+        
+        <div class="nav-links">
+            <!-- Liens toujours visibles -->
+            <a href="{% url 'avis_public' %}">Espace Citoyen</a>
+            <a href="{% url 'participer_sondages' %}">Enquêtes Publiques</a>
+            
+            <!-- Boutons visibles UNIQUEMENT par le public (non connecté) -->
+            {% if not user.is_authenticated %}
+                <a href="{% url 'creer_reclamation' %}" style="color: #f1c40f;">📝 Déposer une réclamation</a>
+                <a href="{% url 'suivi_reclamation' %}" style="color: #f1c40f;">🔍 Suivre ma réclamation</a>
+            {% endif %}
+
+            <!-- MENU POUR LES CONNECTÉS (ARTEC / OPÉRATEURS) -->
+            {% if user.is_authenticated %}
+                {% if user.is_superuser or user.groups.all.0.name == 'ARTEC' %}
+                    <a href="{% url 'dashboard_artec' %}">Console Régulateur</a>
+                {% elif user.groups.all.0.name in 'YAS,Orange,Airtel' %}
+                    <a href="{% url 'dashboard_operateur' %}">Mon Tableau de Bord</a>
+                {% endif %}
+                
+                <a href="{% url 'boite_reception' %}">Boîte de réception</a>
+                <a href="{% url 'liste_reclamations' %}">Gestion Signalements</a>
+                <a href="{% url 'gerer_sondages' %}">Gestion Enquêtes</a>
+                
+                <!-- Déconnexion avec séparation visuelle -->
+                <form action="{% url 'deconnexion' %}" method="post" style="margin: 0; margin-left: 20px; border-left: 1px solid #555; padding-left: 20px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-logout">Déconnexion</button>
+                </form>
+            {% else %}
+                <!-- Lien de connexion pour le public -->
+                <a href="{% url 'login' %}" style="background: #007bff; color: white;">Connexion</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Les messages d'erreur ou de succès apparaîtront ici -->
+    <div class="main-content">
+        {% if messages %}
+            <ul style="list-style:none; padding:0;">
+                {% for message in messages %}
+                    <li style="padding: 15px; margin-bottom: 20px; border-radius: 4px; background: {% if message.tags == 'success' %}#d4edda{% elif message.tags == 'error' %}#f8d7da{% else %}#d1ecf1{% endif %}; color: #333; border-left: 5px solid {% if message.tags == 'success' %}#28a745{% elif message.tags == 'error' %}#dc3545{% else %}#17a2b8{% endif %};">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+</body>
+</html>

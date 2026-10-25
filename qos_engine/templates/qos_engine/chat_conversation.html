@@ -1,0 +1,54 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Discussion avec {{ autre_utilisateur.username }}{% endblock %}
+
+{% block content %}
+<style>
+    .chat-container { max-width: 800px; margin: auto; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 70vh; }
+    .chat-header { background: #007bff; color: white; padding: 20px; border-radius: 8px 8px 0 0; display: flex; align-items: center; }
+    .chat-box { flex: 1; padding: 20px; overflow-y: auto; background: #e5e5e5; display: flex; flex-direction: column; gap: 15px; }
+    .message { max-width: 70%; padding: 12px 18px; border-radius: 18px; font-size: 15px; position: relative; }
+    .message.moi { align-self: flex-end; background: #007bff; color: white; border-bottom-right-radius: 2px; }
+    .message.autre { align-self: flex-start; background: white; color: #333; border-bottom-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .time { display: block; font-size: 11px; margin-top: 5px; opacity: 0.8; text-align: right; }
+    .form-chat { display: flex; padding: 20px; background: white; border-top: 1px solid #ddd; border-radius: 0 0 8px 8px; }
+    .form-chat input[type="text"] { flex: 1; padding: 12px 20px; border: 1px solid #ccc; border-radius: 25px; outline: none; font-size: 15px; }
+    .form-chat button { background: #007bff; color: white; border: none; padding: 12px 25px; border-radius: 25px; margin-left: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    .form-chat button:hover { background: #0056b3; }
+</style>
+
+<div class="chat-container">
+    <div class="chat-header">
+        <h3 style="margin: 0;">Discussion avec {{ autre_utilisateur.username }}</h3>
+    </div>
+
+    <div class="chat-box" id="chat-box">
+        {% for msg in historique %}
+            {% if msg.expediteur == request.user %}
+                <div class="message moi">
+                    {{ msg.contenu }}
+                    <span class="time">{{ msg.date_envoi|date:"H:i" }}</span>
+                </div>
+            {% else %}
+                <div class="message autre">
+                    {{ msg.contenu }}
+                    <span class="time">{{ msg.date_envoi|date:"H:i" }}</span>
+                </div>
+            {% endif %}
+        {% empty %}
+            <p style="text-align: center; color: #888; margin-top: 50px;">Aucun message. Commencez la discussion !</p>
+        {% endfor %}
+    </div>
+
+    <form class="form-chat" method="POST">
+        {% csrf_token %}
+        <input type="text" name="contenu" placeholder="Écrivez votre message..." required autocomplete="off">
+        <button type="submit">Envoyer</button>
+    </form>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

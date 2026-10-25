@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord ARTEC</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #263449;
+        }
+
+        header {
+            background: linear-gradient(135deg, #123c69, #1769aa);
+            color: white;
+            padding: 25px 7%;
+            box-shadow: 0 4px 15px rgba(18, 60, 105, 0.15);
+        }
+
+        header h2 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            margin-bottom: 0;
+            color: #dce8f7;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 45px auto;
+            padding: 0 22px;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        h1 {
+            color: #123c69;
+            margin-bottom: 10px;
+            font-size: 30px;
+        }
+
+        .logout-form {
+            margin: 0;
+        }
+
+        .logout-button {
+            padding: 12px 18px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #b02a37;
+        }
+
+        .description {
+            color: #64748b;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            padding: 28px 24px;
+            border-radius: 16px;
+            box-shadow: 0 6px 24px rgba(18, 60, 105, 0.07);
+            border-left: 5px solid #123c69;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(18, 60, 105, 0.13);
+        }
+
+        .card h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #123c69;
+            margin: 20px 0 0;
+        }
+
+        .pending {
+            border-left-color: #e0a800;
+        }
+
+        .pending .number {
+            color: #b88600;
+        }
+
+        .progress {
+            border-left-color: #1976d2;
+        }
+
+        .progress .number {
+            color: #1976d2;
+        }
+
+        .resolved {
+            border-left-color: #198754;
+        }
+
+        .resolved .number {
+            color: #198754;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 38px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 13px 20px;
+            background: #123c69;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .button:hover {
+            background: #1d5288;
+            transform: translateY(-2px);
+        }
+
+        .secondary {
+            background: white;
+            color: #123c69;
+            border: 1px solid #cbd5e1;
+        }
+
+        .secondary:hover {
+            background: #eaf1f8;
+            color: #123c69;
+        }
+
+        footer {
+            text-align: center;
+            padding: 28px 15px;
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 55px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 22px;
+            }
+
+            .container {
+                margin: 30px auto;
+                padding: 0 16px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 23px;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .logout-button {
+                width: 100%;
+            }
+
+            .logout-form {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h2>ARTEC</h2>
+        <p>Tableau de bord de gestion des réclamations</p>
+    </header>
+
+    <main class="container">
+
+        <div class="top">
+            <h1>Tableau de bord</h1>
+
+            <form method="post"
+                  action="{% url 'deconnexion' %}"
+                  class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">
+                    Déconnexion
+                </button>
+            </form>
+        </div>
+
+        <p class="description">
+            Vue générale des réclamations reçues par l'ARTEC.
+        </p>
+
+        <div class="cards">
+            <div class="card">
+                <h3>Total des réclamations</h3>
+                <p class="number">{{ total }}</p>
+            </div>
+
+            <div class="card pending">
+                <h3>En attente</h3>
+                <p class="number">{{ en_attente }}</p>
+            </div>
+
+            <div class="card progress">
+                <h3>En cours</h3>
+                <p class="number">{{ en_cours }}</p>
+            </div>
+
+            <div class="card resolved">
+                <h3>Résolues</h3>
+                <p class="number">{{ resolues }}</p>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="{% url 'liste_reclamations' %}" class="button">
+                Consulter les réclamations
+            </a>
+
+            <a href="/" class="button secondary">
+                Retour à l'accueil
+            </a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 ARTEC — Plateforme de gestion des réclamations
+    </footer>
+
+</body>
+</html>

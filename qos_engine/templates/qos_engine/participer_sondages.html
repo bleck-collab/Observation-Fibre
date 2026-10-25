@@ -1,0 +1,68 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Sondages Publics - ARTEC{% endblock %}
+
+{% block content %}
+<style>
+    .header-public { text-align: center; background: #8e44ad; color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 30px; }
+    .sondage-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 25px; border-left: 5px solid #8e44ad; }
+    .sondage-titre { margin: 0 0 5px 0; color: #333; font-size: 22px; }
+    .sondage-createur { font-size: 12px; color: #888; text-transform: uppercase; margin-bottom: 15px; display: block; }
+    .sondage-question { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 3px solid #ccc; }
+    
+    .rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 5px; margin-bottom: 20px; }
+    .rating input { display: none; }
+    .rating label { font-size: 35px; color: #ddd; cursor: pointer; transition: 0.2s; }
+    .rating input:checked ~ label, .rating label:hover, .rating label:hover ~ label { color: #f39c12; }
+
+    .form-group { margin-bottom: 15px; }
+    .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; box-sizing: border-box; }
+    .btn-submit { background: #8e44ad; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+    .btn-submit:hover { background: #732d91; }
+    .empty-state { text-align: center; background: white; padding: 40px; border-radius: 8px; color: #888; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+</style>
+
+<div class="header-public">
+    <h1>📊 Sondages Citoyens</h1>
+    <p>Donnez votre avis sur les services télécoms à Madagascar.</p>
+</div>
+
+{% for sondage in sondages %}
+    <div class="sondage-card">
+        <h2 class="sondage-titre">{{ sondage.titre }}</h2>
+        <span class="sondage-createur">
+            Par : {{ sondage.createur_type }} 
+            {% if sondage.operateur_cible %} ({{ sondage.operateur_cible }}){% endif %}
+        </span>
+        
+        <div class="sondage-question">{{ sondage.question }}</div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="sondage_id" value="{{ sondage.id }}">
+            
+            <div class="form-group">
+                <label>Quelle note donnez-vous ?</label>
+                <div class="rating">
+                    <input type="radio" id="star5_{{ sondage.id }}" name="note" value="5" required /><label for="star5_{{ sondage.id }}">★</label>
+                    <input type="radio" id="star4_{{ sondage.id }}" name="note" value="4" /><label for="star4_{{ sondage.id }}">★</label>
+                    <input type="radio" id="star3_{{ sondage.id }}" name="note" value="3" /><label for="star3_{{ sondage.id }}">★</label>
+                    <input type="radio" id="star2_{{ sondage.id }}" name="note" value="2" /><label for="star2_{{ sondage.id }}">★</label>
+                    <input type="radio" id="star1_{{ sondage.id }}" name="note" value="1" /><label for="star1_{{ sondage.id }}">★</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="commentaire" class="form-control" placeholder="Un commentaire ? (Optionnel)">
+            </div>
+
+            <button type="submit" class="btn-submit">Envoyer ma réponse</button>
+        </form>
+    </div>
+{% empty %}
+    <div class="empty-state">
+        <h2>Aucun sondage en cours pour le moment.</h2>
+        <p>Revenez plus tard pour donner votre avis !</p>
+    </div>
+{% endfor %}
+{% endblock %}

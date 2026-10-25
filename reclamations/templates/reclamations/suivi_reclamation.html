@@ -1,0 +1,45 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Suivre ma réclamation{% endblock %}
+
+{% block content %}
+<style>
+    .container-suivi { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .container-suivi h1 { color: #333; text-align: center; margin-bottom: 10px; }
+    .container-suivi p { text-align: center; color: #666; margin-bottom: 25px; }
+    .form-group { margin-bottom: 20px; }
+    .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+    .btn-submit { background: #145A32; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; }
+    .btn-submit:hover { background: #0e3d22; }
+    .error-msg { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 4px; margin-bottom: 20px; text-align: center; }
+    .result-card { background: #f8f9fa; border-left: 5px solid #28a745; padding: 20px; border-radius: 4px; margin-top: 20px; }
+    .result-card h3 { margin-top: 0; color: #333; }
+</style>
+
+<div class="container-suivi">
+    <h1>Suivre ma réclamation</h1>
+    <p>Saisissez la référence reçue après le dépôt de votre réclamation.</p>
+
+    {% if erreur %}
+        <div class="error-msg">{{ erreur }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" name="reference" class="form-control" placeholder="Ex: 550e8400-e29b-41d4-a716-446655440000" required>
+        </div>
+        <button type="submit" class="btn-submit">Rechercher mon dossier</button>
+    </form>
+
+    {% if reclamation %}
+        <div class="result-card">
+            <h3>Détails de la réclamation</h3>
+            <p><strong>Opérateur :</strong> {{ reclamation.operateur }}</p>
+            <p><strong>Sujet :</strong> {{ reclamation.sujet }}</p>
+            <p><strong>Statut actuel :</strong> <span style="font-weight:bold; color: #d35400;">{{ reclamation.statut }}</span></p>
+            <p><strong>Date de dépôt :</strong> {{ reclamation.date_creation|date:"d/m/Y à H:i" }}</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

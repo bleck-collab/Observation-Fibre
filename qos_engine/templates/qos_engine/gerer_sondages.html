@@ -1,0 +1,62 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Gestion des Sondages{% endblock %}
+
+{% block content %}
+<style>
+    .form-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 30px; border-top: 4px solid #8e44ad; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
+    .form-control { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+    .btn-submit { background: #28a745; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+    .btn-submit:hover { background: #218838; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #2c3e50; color: white; }
+    .badge-views { background: #e1f5fe; color: #0288d1; padding: 5px 10px; border-radius: 20px; font-weight: bold; }
+</style>
+
+<h1 style="color: #333; border-bottom: 2px solid #8e44ad; padding-bottom: 10px;">📊 Gestion des Sondages</h1>
+
+<div class="form-container">
+    <h2 style="margin-top: 0;">Créer un nouveau sondage</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Titre du sondage (Court)</label>
+            <input type="text" name="titre" class="form-control" placeholder="Ex: Satisfaction Réseau 2026" required>
+        </div>
+        <div class="form-group">
+            <label>Question posée aux utilisateurs</label>
+            <input type="text" name="question" class="form-control" placeholder="Ex: Comment évaluez-vous la qualité de notre réseau ?" required>
+        </div>
+        <button type="submit" class="btn-submit">Créer le sondage</button>
+    </form>
+</div>
+
+<h2 style="color: #333;">Mes sondages en cours</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Question</th>
+            <th>Date de création</th>
+            <th>Réponses reçues</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sondage in sondages %}
+        <tr>
+            <td><b>{{ sondage.titre }}</b></td>
+            <td>{{ sondage.question }}</td>
+            <td>{{ sondage.date_creation|date:"d/m/Y" }}</td>
+            <td><span class="badge-views">{{ sondage.reponses.count }} vote(s)</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" style="text-align: center; color: #888; padding: 30px;">Aucun sondage créé pour le moment.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

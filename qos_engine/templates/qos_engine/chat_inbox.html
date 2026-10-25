@@ -1,0 +1,52 @@
+{% extends 'qos_engine/base.html' %}
+
+{% block title %}Messagerie - ARTEC{% endblock %}
+
+{% block content %}
+<style>
+    .contact-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+    .contact-card { background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; }
+    .contact-card a { display: flex; align-items: center; padding: 20px; text-decoration: none; color: #333; border-left: 5px solid #007bff; transition: 0.3s; }
+    .contact-card a:hover { background: #f8f9fa; }
+    .avatar { width: 45px; height: 45px; background: #007bff; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 20px; font-weight: bold; margin-right: 15px; }
+    .msg-preview { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .msg-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+    .msg-item:last-child { border-bottom: none; }
+</style>
+
+<h1 style="color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px;">💬 Messagerie</h1>
+<p style="color: #666; margin-bottom: 25px;">Choisissez un contact pour discuter ou consultez vos derniers messages.</p>
+
+<h3 style="color: #444;">Vos contacts</h3>
+<div class="contact-list">
+    {% for contact in contacts %}
+        <div class="contact-card">
+            <a href="{% url 'conversation' contact.id %}">
+                <div class="avatar">{{ contact.username|first|upper }}</div>
+                <div>
+                    <div style="font-weight: bold; font-size: 16px;">{{ contact.username }}</div>
+                    <div style="font-size: 12px; color: #888;">
+                        {% if contact.groups.all %}{{ contact.groups.first.name }}{% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% empty %}
+        <p style="color: #888;">Aucun contact disponible.</p>
+    {% endfor %}
+</div>
+
+<h3 style="color: #444; margin-top: 30px;">Derniers messages reçus</h3>
+<div class="msg-preview">
+    <ul style="list-style: none; padding: 0; margin: 0;">
+        {% for msg in messages_recus %}
+            <li class="msg-item">
+                <b>{{ msg.expediteur.username }}</b> : {{ msg.contenu|truncatechars:80 }}
+                <span style="float: right; font-size: 12px; color: #999;">{{ msg.date_envoi|date:"d/m/Y H:i" }}</span>
+            </li>
+        {% empty %}
+            <li style="color: #888; text-align: center;">Aucun message pour le moment.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
